@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Travel Planner</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <header>
+            <h1>Travel Planner</h1>
+        </header>
+        <main>
+            <section class="input">
+                <form>
+                    <label for="location">Enter your travel location</label>
+                    <input id="location" type="text" name="location" value=""  placeholder="Enter your trip location here" required>
+                    <label for="travelDate">Enter your date of travel</label>
+                    <input id="travelDate" type="date" name="travelDate" value="" placeholder="Enter your date of travel" required>
+                    <button type="submit" name="submit" value="submit">Add Trip</button>
+                </form>
+            </section>
+            <section class="image">
+                <img id="image">
+            </section>
+            <section class="details">
+                <div>
+                    <h2 id="loc"></h2>
+                    <h3 id="weather"></h3>
+                    <h4 id="temp"></h4>
+                    <h5 id="days"></h5>
+                </div>
+            </section>
+        </main>
+        <footer>
+
+        </footer>
+    </body>
+</html>
