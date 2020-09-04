@@ -24,7 +24,7 @@ app.use(cors());
 
 
 // Initialize the main project folder
-app.use(express.static('website'));
+app.use(express.static('dist'));
 
 const port=8000;
 app.listen(port,listening);
@@ -46,32 +46,40 @@ const pixaBayBaseURL='https://pixabay.com/api/?image_type=photo&key=';
 //save user input
 let userInput={};
 let userOutput={
-    minTemp:'',maxTemp:'',description:'',imageURL:'',daysToTravel:'',location:'',travelDate:''
+    minTemp:'',maxTemp:'',description:'',imageURL:'',daysToTravel:'',
+    location:'',travelStartDate:'',travelEndDate:'',tripDuration:'',country:''
 };
 app.post('/saveData',savePostedData);
 
+//callback function to postmethod
 function savePostedData(req,res){
     userInput=req.body;
-    console.log(userInput);
     getLatAndLonFromGeoNames(geoNamesBaseURL,encodeURIComponent(userInput.location),GEONAMES_USER_NAME)
     .then(function(responseData){
-       // if(calculateDateOfTravel()>7)
-        getWeatherDataFromWeatherBit(weatherBitForecastBaseURL,WEATHERBIT_API_KEY,responseData.geonames[0].lat,responseData.geonames[0].lng,calculateDateOfTravel())
+        if(responseData.totalResultsCount==0){
+            res.send('Please enter valid location');
+        }
+        else{
+        userOutput.country=responseData.geonames[0].countryName;
+        getWeatherDataFromWeatherBit(weatherBitForecastBaseURL,WEATHERBIT_API_KEY,responseData.geonames[0].lat,responseData.geonames[0].lng,difBtDates(new Date(),createDateObjectFromDate(userInput.travelStartDate)))
         .then(function(){
             getImageURLFromPixabay(pixaBayBaseURL,PIXABAY_API_KEY,encodeURIComponent(userInput.location))
             .then(function(response){
-                console.log(response);
-                res.send(setUserOutput(response));
+                getCountryImage(response).then((response)=>{
+                    res.send(setUserOutput(response.hits[0].webformatURL));
             })
         })
-        //else
-        //getWeatherDataFromWeatherBit(weatherBitCurrentBaseURL,WEATHERBIT_API_KEY,responseData.geonames[0].lat,responseData.geonames[0].lng)
+    });
+}
+}).catch(error=> {
+        res.send(error);
     });
 }
 
-/* Function to GET Web API Data*/
+/*Main functions*/
+
+// Function to get Weather data from weatherbit api
 const getWeatherDataFromWeatherBit= async (url,key,lat,lon,days)=>{
-    console.log(' 2 function called');
     const response=await fetch(`${url}${key}&lat=${lat}&lon=${lon}&days=${days}`);
     try{
         const responseData=await response.json();
@@ -79,7 +87,6 @@ const getWeatherDataFromWeatherBit= async (url,key,lat,lon,days)=>{
         userOutput.minTemp=reqData.min_temp;
         userOutput.maxTemp=reqData.max_temp;
         userOutput.description=reqData.weather.description;
-        console.log(reqData);
         return reqData;
     }catch(error){
         console.log('error',error);
@@ -87,8 +94,8 @@ const getWeatherDataFromWeatherBit= async (url,key,lat,lon,days)=>{
 }
 
 
+//function to get lat, long from geonames api
 const getLatAndLonFromGeoNames= async (url,location,username)=>{
-    console.log('function called');
     const response=await fetch(`${url}${location}&username=${username}`);
     try{
         const responseData=await response.json();
@@ -99,38 +106,50 @@ const getLatAndLonFromGeoNames= async (url,location,username)=>{
 }
 
 
+//function to get location image from pixabay api
 const getImageURLFromPixabay= async (url,key,location)=>{
-    console.log('3 function called');
     const response=await fetch(`${url}${key}&q=${location}`);
     try{
         const responseData=await response.json();
-        console.log(responseData.hits[0].webformatURL);
-        userOutput.imageURL=responseData.hits[0].webformatURL;
-        return responseData.hits[0].webformatURL;
+        return responseData;
     }catch(error){
         console.log('error',error);
     }
 }
 
 
+//function to get country image from pixabay api when location pic is not available
+const getCountryImage=async(response)=>{
+    if(response.totalHits==0){
+       return getImageURLFromPixabay(pixaBayBaseURL,PIXABAY_API_KEY,encodeURIComponent(userOutput.country));
+    }
+    else
+        return response;
+}
+
+
+//function to return user response
 function setUserOutput(imageURL){
-    userOutput.daysToTravel=calculateDateOfTravel();
+    userOutput.daysToTravel=difBtDates(new Date(),createDateObjectFromDate(userInput.travelStartDate));
     userOutput.imageURL=imageURL;
     userOutput.location=userInput.location;
-    userOutput.travelDate=userInput.travelDate;
-    console.log(userOutput);
+    userOutput.travelStartDate=userInput.travelStartDate;
+    userOutput.travelEndDate=userInput.travelEndDate;
+    userOutput.tripDuration=difBtDates(createDateObjectFromDate(userOutput.travelStartDate),createDateObjectFromDate(userOutput.travelEndDate));
     return userOutput;
 }
 
-function calculateDateOfTravel(){
-    let currentDate=new Date();
-    let splitDate=userInput.travelDate.split('-');
-    let travelDate=new Date(splitDate[0],splitDate[1]-1,splitDate[2]);
-    let noOfDaysToTravel=difBtDates(currentDate,travelDate);
-    return noOfDaysToTravel;
+
+/*Helper functions*/
+
+//returns date object from date string
+function createDateObjectFromDate(date){
+    let splitDate=date.split('-');
+    return new Date(splitDate[0],splitDate[1]-1,splitDate[2]);
 }
 
 
+//returns difference between two date objects
 function difBtDates( date1, date2 ) {
     //Get 1 day in milliseconds
     var one_day=1000*60*60*24;
@@ -143,7 +162,7 @@ function difBtDates( date1, date2 ) {
     var difference_ms = date2_ms - date1_ms;
     // Convert back to days and return
     return (difference_ms/one_day)+1;
-  }
+}
 
 
 

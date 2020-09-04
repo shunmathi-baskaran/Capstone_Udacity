@@ -6,33 +6,53 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <header>
-            <h1>Travel Planner</h1>
-        </header>
-        <main>
-            <section class="input">
+        <div class="container">
+            <header>
+                <h1>Travel Planner</h1>
+            </header>
+            <div class="input">
+                <h2 class="sideHeading">Get your trip location details</h2>
+                <div id="message-wrap"></div>
                 <form>
                     <label for="location">Enter your travel location</label>
                     <input id="location" type="text" name="location" value=""  placeholder="Enter your trip location here" required>
-                    <label for="travelDate">Enter your date of travel</label>
-                    <input id="travelDate" type="date" name="travelDate" value="" placeholder="Enter your date of travel" required>
-                    <button type="submit" name="submit" value="submit">Add Trip</button>
+                    <br>
+                    <label for="travelStartDate">Enter your date of travel</label>
+                    <input id="travelStartDate" type="date" name="travelStartDate" value=""  required>
+                    <br>
+                    <label for="travelEndDate">Enter your return date</label>
+                    <input id="travelEndDate" type="date" name="travelEndDate" value="" required>
+                    <br>
+                    <button type="submit" name="submit" value="submit">View Details</button>
                 </form>
-            </section>
-            <section class="image">
-                <img id="image">
-            </section>
-            <section class="details">
-                <div>
-                    <h2 id="loc"></h2>
-                    <h3 id="weather"></h3>
-                    <h4 id="temp"></h4>
-                    <h5 id="days"></h5>
+            </div>
+            <div class="tripOutput">
+                <div class="image">
+                    <img id="image">
                 </div>
-            </section>
-        </main>
-        <footer>
-
-        </footer>
+                <div class="details">
+                    <div>
+                        <h2 id="loc"></h2>
+                        <p id="days"></p>
+                        <p id="dates"></p>
+                        <p id="tripDuration"></p>
+                        <p id="temp"></p>
+                        <p id="weather"></p>                   
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <p class="menu-item">© Copyright 2020</p>
+            </footer>
+        </div>
+        <script>
+            // Check that service workers are supported
+            if ('serviceWorker' in navigator) {
+                // Use the window load event to keep the page load performant
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js');
+                });
+            }
+        </script>
     </body>
 </html>

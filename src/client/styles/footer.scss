@@ -1,9 +1,10 @@
-header {
-    grid-area: hd; 
+footer {
+    grid-area: ft; 
+    border-radius: 0.5em;
+    padding:0.5em;
     background-color: #028cb0;
     border: 2px solid #017a97;
     text-align: left;
     border-radius: 0.5em;
-    padding:1.5em;
     color: white;
 }
