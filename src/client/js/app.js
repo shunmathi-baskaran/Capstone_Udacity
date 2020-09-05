@@ -21,7 +21,7 @@ function getValues() {
         document.getElementById('image').src='';
         document.querySelector('.tripOutput').setAttribute('style','display:none;');
     }
-    console.log(location +' '+ travelStartDate+' '+travelEndDate);
+    console.log(location,travelStartDate,travelEndDate);
 }
 
 

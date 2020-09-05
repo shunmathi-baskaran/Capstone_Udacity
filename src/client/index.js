@@ -4,7 +4,9 @@ import './styles/footer.scss'
 import './styles/grid.scss'
 
 
-document.addEventListener('DOMContentLoaded',setMinAndMaxDate);
-document.querySelector('form').addEventListener('submit',getValues);
+document.addEventListener('DOMContentLoaded',()=>{
+    setMinAndMaxDate();
+    document.querySelector('form').addEventListener('submit',getValues);
+});
 
-export{getValues,postData}
+export{getValues,postData,setMinAndMaxDate}

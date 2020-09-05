@@ -1,7 +1,6 @@
 // Require Express to run server and routes
 const express=require('express');
 const bodyParser=require('body-parser');
-const { urlencoded } = require('body-parser');
 const cors=require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -38,9 +37,8 @@ const WEATHERBIT_API_KEY=process.env.WEATHERBIT_API_KEY;
 const GEONAMES_USER_NAME=process.env.GEONAMES_USER_NAME;
 const PIXABAY_API_KEY=process.env.PIXABAY_API_KEY;
 const weatherBitForecastBaseURL='http://api.weatherbit.io/v2.0/forecast/daily?key=';
-const weatherBitCurrentBaseURL='http://api.weatherbit.io/v2.0/current?key=';
 const geoNamesBaseURL='http://api.geonames.org/search?type=json&maxRows=1&q=';
-const pixaBayBaseURL='https://pixabay.com/api/?image_type=photo&key=';
+const pixaBayBaseURL='https://pixabay.com/api/?image_type=photo&category=places&key=';
 
 
 //save user input
@@ -164,6 +162,5 @@ function difBtDates( date1, date2 ) {
     return (difference_ms/one_day)+1;
 }
 
-
-
-
+module.exports.getLatAndLonFromGeoNames = getLatAndLonFromGeoNames;
+module.exports.getImageURLFromPixabay = getImageURLFromPixabay;
